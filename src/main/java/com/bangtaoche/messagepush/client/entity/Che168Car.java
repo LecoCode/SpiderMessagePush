@@ -144,7 +144,21 @@ public class Che168Car {
      * 所在城市
      */
     private String location;
-    
+
+    /**
+     * 添加时间
+     */
+    @Column(name = "sell_time")
+    private String SellTime;
+
+    public String getSellTime() {
+        return SellTime;
+    }
+
+    public void setSellTime(String sellTime) {
+        SellTime = sellTime;
+    }
+
     /** 设置 车辆ID */
     public void setCarId(long carId) {
         this.carId = carId;

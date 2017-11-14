@@ -3,6 +3,7 @@ package com.bangtaoche.messagepush.client.dao;
 import com.bangtaoche.messagepush.client.entity.Che168;
 import com.bangtaoche.messagepush.client.entity.Che168Car;
 import com.bangtaoche.messagepush.client.entity.Che168PriceChange;
+import com.bangtaoche.messagepush.client.entity.IP;
 import com.darengong.tools.dao.v2.DAOHelperV2;
 import com.darengong.tools.dao.v2.DBQuery;
 import com.darengong.tools.dao.v2.KeyValueParis;
@@ -56,7 +57,7 @@ public class RenRenCheDAO extends BaseDAO{
 	 * @param car
 	 * @throws Exception
 	 */
-	public synchronized void updateRenRenCheCar(Che168Car car) throws Exception {
+	public synchronized void updateChe168Car(Che168Car car) throws Exception {
 		KeyValueParis map = new KeyValueParis();
 		map.add("owner_price", car.getOwnerPrice());
 		map.add("new_status", car.getNewStatus());
@@ -77,7 +78,11 @@ public class RenRenCheDAO extends BaseDAO{
 		dbquery.column("source_url").inList(carUrls);
 		return daoHelper.updateByQuery(Che168Car.class, map, dbquery);
 	}
-	
+
+	public List<IP> getIP() throws Exception {
+		DBQuery dbQuery = new DBQuery();
+		return daoHelper.getsByQuery(IP.class,dbQuery,1,3,null,"id desc");
+	}
 	public List<Che168Car> getCars(List<Long> carIds) throws Exception {
 		DBQuery dbquery = new DBQuery();
 		dbquery.column("car_id").inList(carIds);
@@ -90,7 +95,7 @@ public class RenRenCheDAO extends BaseDAO{
 	 * @return
 	 * @throws Exception
 	 */
-	public Che168Car getRenRenCheCar(String carUrl) throws Exception {
+	public Che168Car getChe168Car(String carUrl) throws Exception {
 		DBQuery dbquery = new DBQuery();
 		dbquery.column("source_url").equal(carUrl);
 		return daoHelper.getOneByQuery(Che168Car.class, dbquery, null, null);
@@ -112,7 +117,7 @@ public class RenRenCheDAO extends BaseDAO{
 	 * @return
 	 * @throws Exception
 	 */
-	public Che168 getRenRenChe(String carUrl) throws Exception {
+	public Che168 getChe168Che(String carUrl) throws Exception {
 		DBQuery query = new DBQuery();
 		query.column("car_url").equal(carUrl);
 		return daoHelper.getOneByQuery(Che168.class, query, null, null);
@@ -238,8 +243,6 @@ public class RenRenCheDAO extends BaseDAO{
 		dbquery.and().column("car_id").inList(carIds);
 		return daoHelper.getsByQuery(Che168Car.class, dbquery, null, null);
 	}
-	
-	
 	@Override
 	public void initDAOHelper() {
 		String orderDaoConfigPath = System.getProperty("com.youche.sprider.renrenche", "conf");
