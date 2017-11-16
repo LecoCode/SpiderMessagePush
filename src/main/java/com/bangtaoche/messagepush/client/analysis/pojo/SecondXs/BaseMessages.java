@@ -1,8 +1,8 @@
 package com.bangtaoche.messagepush.client.analysis.pojo.SecondXs;
 
-import com.bangtaoche.messagepush.util.CommonUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 public class BaseMessages {
     public static final String [] BASE_INDEX = new String []{"年检到期","保险到期","质保到期","排放标准","过户次数","维修保养","车主描述"};
+    private static Logger logger = Logger.getLogger(BaseMessages.class);
     private Element element;
     public BaseMessages(Element element){
         this.element=element;
@@ -78,7 +79,6 @@ public class BaseMessages {
         carMessage = ul.get(7).getElementsByClass("tip-content fn-clear").text();
 //        System.out.println("--------------->"+carMessage);
 
-        CommonUtil.outputRun("[run] BaseMeesage 结束");
         return getTextAll(nianJian,baoXian,zhiBao,paiFang,guoHu,baoYang,carMessage);
     }
 
@@ -91,6 +91,7 @@ public class BaseMessages {
         HashMap<String,String> message  = new HashMap<String, String>();
         for (int i = 0; i <BASE_INDEX.length ; i++) {
             message.put(BASE_INDEX[i],strings[i]);
+            logger.info(BASE_INDEX[i]+":"+strings[i]);
         }
         return message;
     }

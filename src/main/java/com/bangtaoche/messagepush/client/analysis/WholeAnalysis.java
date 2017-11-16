@@ -47,9 +47,9 @@ public class WholeAnalysis{
     public WholeAnalysis(String url, int ThreadMax){
        this.url=url;
        executorService = Executors.newFixedThreadPool(ThreadMax);
-        executorService1 = Executors.newFixedThreadPool(ThreadMax);
+       executorService1 = Executors.newFixedThreadPool(ThreadMax);
        clientFactory = new ThreadLocalClientFactory();
-        webClient = clientFactory.getWebClient();
+       webClient = clientFactory.getWebClient();
     }
 
     /**
@@ -71,11 +71,9 @@ public class WholeAnalysis{
             }
         }catch (NullPointerException e){
             e.printStackTrace();
-            CommonUtil.outputERROR("[ERROR] 列表页获取到脏的IP了"+e.getMessage());
             analyStart();
         }catch (Exception e){
             e.printStackTrace();
-            CommonUtil.outputERROR("[ERROR] WholeAnalysis:"+e.getMessage());
             analyStart();
         }
         WholeX wholeX = new WholeX(document,new CheResultProcessing());
@@ -83,79 +81,84 @@ public class WholeAnalysis{
         Set<String> twoLevelPageUrls = new HashSet<String>();
         List<carBean> carBeans =
                 wholeX.analysisSingleLiAll();
-        MessageSends messageSends = new MessageSends();
-        for (carBean c:
-             carBeans) {
-            boolean isStatus=false;
-            try {
-                Che168Car che168Car =
-                        dao.getChe168Car(c.getUrl());
-                if (che168Car!=null){
-                    int newStatus = che168Car.getNewStatus();
-                    String shangXing = c.getShangXing();
-                    int news = isNewStatus(shangXing);
-                    if (news!=-1){
-                        isStatus=true;
-                        if (news!=newStatus){
-                            /**
-                             * 取消上新
-                             */
-                            che168Car.setNewStatus(2);
-                            SendCarMessage sendCarMessage = new SendCarMessage();
-                            sendCarMessage.setCarId(che168Car.getCarId());
-                            sendCarMessage.setSourceId(5);
-                            messageSends.sendMessageCarCancleNew(sendCarMessage);
+        if (carBeans!=null){
+            MessageSends messageSends = new MessageSends();
+            for (carBean c:
+                    carBeans) {
+                boolean isStatus=false;
+                try {
+                    Che168Car che168Car =
+                            dao.getChe168Car(c.getUrl());
+                    if (che168Car!=null){
+                        int newStatus = che168Car.getNewStatus();
+                        String shangXing = c.getShangXing();
+                        int news = isNewStatus(shangXing);
+                        if (news!=-1){
+                            isStatus=true;
+                            if (news!=newStatus){
+                                /**
+                                 * 取消上新
+                                 */
+                                che168Car.setNewStatus(2);
+                                SendCarMessage sendCarMessage = new SendCarMessage();
+                                sendCarMessage.setCarId(che168Car.getCarId());
+                                sendCarMessage.setSourceId(5);
+//                            messageSends.sendMessageCarCancleNew(sendCarMessage);
+                                CommonUtil.outputFileXXXX(sendCarMessage.toString(),"Message_QXSX");
+                            }
                         }
-                    }
-                    double inshoujia =isJiaQian(c.getShouJia());
-                    double ownerPrice = che168Car.getOwnerPrice();
-                    if (inshoujia!=ownerPrice){
-                        isStatus=true;
-                        if (inshoujia>ownerPrice){
-                           //如果新价格大于旧价格：取消降价
-                            che168Car.setOwnerPrice(inshoujia);
-                            che168Car.setPriceReduction(2);
-                            double price = inshoujia-ownerPrice;//升了多少钱
-                            SendPriceMessage sendPriceMessage = new SendPriceMessage();
-                            sendPriceMessage.setCarId(che168Car.getCarId());
-                            sendPriceMessage.setPrice(inshoujia);
-                            sendPriceMessage.setPriceChange(price);
-                            sendPriceMessage.setSourceId(5);
-
-                            messageSends.sendMessagePriceCancleDown(sendPriceMessage);
-                        }else if (inshoujia<ownerPrice){
-                            //如果新价格小于旧价格：降价
-                            che168Car.setOwnerPrice(inshoujia);
-                            che168Car.setPriceReduction(1);
-                            double price = ownerPrice-inshoujia;//降了多少钱
-                            SendPriceMessage sendPriceMessage = new SendPriceMessage();
-                            sendPriceMessage.setCarId(che168Car.getCarId());
-                            sendPriceMessage.setPrice(inshoujia);
-                            sendPriceMessage.setPriceChange(price);
-                            sendPriceMessage.setSourceId(5);
-                            messageSends.sendMessagePriceCancleDown(sendPriceMessage);
+                        double inshoujia =isJiaQian(c.getShouJia());
+                        double ownerPrice = che168Car.getOwnerPrice();
+                        if (inshoujia!=ownerPrice){
+                            isStatus=true;
+                            if (inshoujia>ownerPrice){
+                                //如果新价格大于旧价格：取消降价
+                                che168Car.setOwnerPrice(inshoujia);
+                                che168Car.setPriceReduction(2);
+                                double price = inshoujia-ownerPrice;//升了多少钱
+                                SendPriceMessage sendPriceMessage = new SendPriceMessage();
+                                sendPriceMessage.setCarId(che168Car.getCarId());
+                                sendPriceMessage.setPrice(inshoujia);
+                                sendPriceMessage.setPriceChange(price);
+                                sendPriceMessage.setSourceId(5);
+                                CommonUtil.outputFileXXXX(sendPriceMessage.toString(),"Message_QXJJ");
+//                            messageSends.sendMessagePriceCancleDown(sendPriceMessage);
+                            }else if (inshoujia<ownerPrice){
+                                //如果新价格小于旧价格：降价
+                                che168Car.setOwnerPrice(inshoujia);
+                                che168Car.setPriceReduction(1);
+                                double price = ownerPrice-inshoujia;//降了多少钱
+                                SendPriceMessage sendPriceMessage = new SendPriceMessage();
+                                sendPriceMessage.setCarId(che168Car.getCarId());
+                                sendPriceMessage.setPrice(inshoujia);
+                                sendPriceMessage.setPriceChange(price);
+                                sendPriceMessage.setSourceId(5);
+//                            messageSends.sendMessagePriceCancleDown(sendPriceMessage);
+                                CommonUtil.outputFileXXXX(sendPriceMessage.toString(),"Message_QXJJ");
+                            }
                         }
+                        if (isStatus){
+//                        dao.updateChe168Car(che168Car);
+                        }
+                    }else{
+                        /**
+                         * 上新
+                         */
+                        twoLevelPageUrls.add(c.getUrl());
+                        CommonUtil.outputFileXXXX(c.getUrl(),"Message_SX");
                     }
-                    if (isStatus){
-                        dao.updateChe168Car(che168Car);
-                    }
-                }else{
-                    /**
-                     * 上新
-                     */
-                    twoLevelPageUrls.add(c.getUrl());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
+            }
+            //启动线程解析二级页面
+            try {
+                ThreadStarts(twoLevelPageUrls);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-        //启动线程解析二级页面
-        try {
-            ThreadStarts(twoLevelPageUrls);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         return "";

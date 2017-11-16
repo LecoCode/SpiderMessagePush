@@ -4,7 +4,6 @@ import com.bangtaoche.messagepush.client.analysis.pojo.bean.carBean;
 import com.bangtaoche.messagepush.client.analysis.pojo.result.CheResultProcessing;
 import com.bangtaoche.messagepush.client.analysis.resultinterface.CheResultInterface;
 import com.bangtaoche.messagepush.client.service.SpoderService;
-import com.bangtaoche.messagepush.util.CommonUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
@@ -49,10 +48,13 @@ public class WholeX {
                 .getElementsByClass("tab-content")
                 .get(0);
         Element elementById = element1.getElementById("tab-11");
-        Element element2 = elementById.getElementsByClass("list-photo").get(0);
-        Element element =
-                element2.getElementsByClass("fn-clear").get(0);
-        lis = element.getElementsByTag("li");
+        if (elementById.getElementsByClass("list-photo").size()>0){
+            Element element2 = elementById.getElementsByClass("list-photo").get(0);
+            Element element =
+                    element2.getElementsByClass("fn-clear").get(0);
+            lis = element.getElementsByTag("li");
+        }
+
 //        System.out.println("lis:"+lis.text());
 //        setDiZhiMax();
     }
@@ -61,17 +63,20 @@ public class WholeX {
      * 解析整个li标签
      */
     public List<carBean> analysisSingleLiAll(){
-        List<carBean> carBeans = new ArrayList<carBean>();
-        for (Element e:
-             lis) {
-            try {
-                carBean carBean = analysisSingleLi(e);
-                carBeans.add(carBean);
-            }catch (Exception e1){
-                continue;
+        if (lis!=null){
+            List<carBean> carBeans = new ArrayList<carBean>();
+            for (Element e:
+                    lis) {
+                try {
+                    carBean carBean = analysisSingleLi(e);
+                    carBeans.add(carBean);
+                }catch (Exception e1){
+                    continue;
+                }
             }
+            return carBeans;
         }
-        return carBeans;
+       return null;
     }
     /**
      * 解析单个li
@@ -188,7 +193,6 @@ public class WholeX {
            //将获取的值付给INDEX_MAX
            SpoderService.INDEX_MAX=a_max;
            if (copy_index_max==SpoderService.INDEX_MAX){
-               CommonUtil.outputINFO("[INFO] 地址的最大值已经改变，值为："+SpoderService.INDEX_MAX);
            }
        }
     /**
@@ -231,7 +235,12 @@ public class WholeX {
     //检查lis是否为空如果为空则调用analysisCarList方法解析Li节点
     private void isCarLiNull(){
         if (lis==null){
-            analysisCarList();
+            try {
+                analysisCarList();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("页面逻辑错误");
+            }
         }
     }
 

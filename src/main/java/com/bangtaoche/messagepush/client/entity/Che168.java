@@ -99,7 +99,7 @@ public class Che168 {
 
 	@Override
 	public String toString() {
-		return "CityUrl [id=" + id + ", cityName=" + cityName + ", cityUrl=" + cityUrl + ", addTime=" + addTime
+		return "[id=" + id + ", cityName=" + cityName + ", cityUrl=" + cityUrl + ", addTime=" + addTime
 				+ ", carUrl=" + carUrl + ", newStatus=" + newStatus + ", priceReduction=" + priceReduction
 				+ ", carPrice=" + carPrice + "]";
 	}

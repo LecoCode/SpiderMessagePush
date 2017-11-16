@@ -1,6 +1,10 @@
 package com.bangtaoche.messagepush.client.analysis.pojo.SecondXs;
 
-import com.bangtaoche.messagepush.util.CommonUtil;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.apache.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -8,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class DetailHead {
+    private static final Logger logger = Logger.getLogger(DetailHead.class);
     public static final String [] DATAIL_INDEX = new String []{"名称","价格","车图片","比新车省","新车税","过户","里程","上牌","档位","排量","所在地","联系","看车地点","发布时间","已售状态"};
     private static final String UrlPath="https:";
     private Element element;
@@ -30,8 +35,6 @@ public class DetailHead {
             DetailHeadContext = contextNodeAnalysis();
         } catch (Exception e) {
             e.printStackTrace();
-            CommonUtil.outputERROR("[ERROR] DetailHead Exception:"+e.getMessage());
-            HTMLshunt();
         }
 //        CommonUtil.outputFileINFO("新车价："+DetailHeadContext.get("新车税"));
         return DetailHeadContext;
@@ -135,6 +138,7 @@ public class DetailHead {
                 getElementsByTag("li");
         liCheng = li.get(0).
                 getElementsByTag("span").get(0).text();
+        liCheng = liCheng.substring(0,liCheng.indexOf("万"));
 //        System.out.println("----------->"+liCheng);
 
 
@@ -164,8 +168,9 @@ public class DetailHead {
                 getElementsByClass("car-results fn-clear").get(0);
         iphone = car_results_fn_clear.
                 getElementsByClass("btn btn-iphone3").get(0).text();
-
-        CommonUtil.outputFileXXXX(iphone,"iphone_match");
+        if (iphone.length()>4) {
+            iphone = iphone.substring(2, iphone.length());
+        }
 //        System.out.println("----------->"+iphone);
 
 
@@ -176,10 +181,10 @@ public class DetailHead {
 //        System.out.println("----------->"+kanCheDiDian);
 
 
-        faBuShiJian = car_address.substring(car_address.lastIndexOf("发布时间：")+5);
+        faBuShiJian = car_address.substring(car_address.lastIndexOf(":")+1).trim();
+//        faBuShiJian = car_address.substring(car_address.lastIndexOf("发布时间: ")+5);
 //        System.out.println("----------->"+faBuShiJian);
 
-        CommonUtil.outputRun("[run] DetailHead 结束");
 
         /*
 
@@ -197,35 +202,32 @@ public class DetailHead {
         HashMap<String,String> message  = new HashMap<String, String>();
         for (int i = 0; i <DATAIL_INDEX.length; i++) {
             message.put(DATAIL_INDEX[i],strings[i]);
+            logger.info(DATAIL_INDEX[i]+":"+strings[i]);
         }
         return message;
     }
 
     //----------------------------
     public static void main(String []args) throws IOException {
-//        String url="https://www.che168.com/dealer/127110/24087113.html?pvareaid=100519#pos=35#page=1#rtype=0#isrecom=2#filter=0aa0_0a0_0a0_0#module=10";
-//        WebClient webClient = new WebClient();
-//        webClient.getOptions().setJavaScriptEnabled(true);
-//        webClient.getOptions().setCssEnabled(false);
-//        webClient.getOptions().setRedirectEnabled(true);
-//        webClient.getOptions().setThrowExceptionOnScriptError(false);
-//        webClient.getOptions().setTimeout(5000);
-//        HtmlPage page =webClient.getPage(url);
-//        Document parse = Jsoup.parse(page.asXml());
-//        Element car_warp_content_fn_clear =
-//                parse.getElementsByClass("car-warp content fn-clear").get(0);
-//        DetailHead detailHead = new DetailHead(car_warp_content_fn_clear);
-////        detailHead.contextNodeAnalysis();
-////        detailHead.ImageNodeAnalysis();
-//        HashMap<String, String> stringStringHashMap = detailHead.HTMLshunt();
-//        for (String s:
-//             stringStringHashMap.values()) {
-//            System.out.println(s);
-//        }
-        String s ="联系人：李飞  发布时间：156-4156-156";
-        String substring = s.substring(s.lastIndexOf("发布时间：")+5);
-        System.out.println(substring);
+        String url="https://www.che168.com/dealer/127110/24087113.html?pvareaid=100519#pos=35#page=1#rtype=0#isrecom=2#filter=0aa0_0a0_0a0_0#module=10";
+        WebClient webClient = new WebClient();
+        webClient.getOptions().setJavaScriptEnabled(true);
+        webClient.getOptions().setCssEnabled(false);
+        webClient.getOptions().setRedirectEnabled(true);
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        webClient.getOptions().setTimeout(5000);
+        HtmlPage page =webClient.getPage(url);
+        Document parse = Jsoup.parse(page.asXml());
+        Element car_warp_content_fn_clear =
+                parse.getElementsByClass("car-warp content fn-clear").get(0);
+        DetailHead detailHead = new DetailHead(car_warp_content_fn_clear);
+//        detailHead.contextNodeAnalysis();
+//        detailHead.ImageNodeAnalysis();
+        HashMap<String, String> stringStringHashMap = detailHead.HTMLshunt();
+        for (String s:
+             stringStringHashMap.values()) {
+            System.out.println(s);
+        }
+
     }
-
-
 }

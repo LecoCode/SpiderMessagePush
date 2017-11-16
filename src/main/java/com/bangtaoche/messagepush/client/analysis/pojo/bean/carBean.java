@@ -94,7 +94,7 @@ public class carBean {
 
         @Override
         public String toString() {
-            return "单个车辆信息{" +
+            return "{" +
                     "url='" + url + '\'' +
                     ", 名称='" + name + '\'' +
                     ", 公里='" + gongLi + '\'' +

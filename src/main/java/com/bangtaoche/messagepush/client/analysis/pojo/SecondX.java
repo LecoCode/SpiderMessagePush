@@ -6,7 +6,6 @@ import com.bangtaoche.messagepush.client.analysis.pojo.SecondXs.DetailHead;
 import com.bangtaoche.messagepush.client.analysis.pojo.bean.carDetailsBean;
 import com.bangtaoche.messagepush.client.analysis.pojo.result.ResultProcessing;
 import com.bangtaoche.messagepush.client.analysis.resultinterface.CarResultInterface;
-import com.bangtaoche.messagepush.util.CommonUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
@@ -31,7 +30,6 @@ public class SecondX {
     private String url;
     public SecondX(Document document, CarResultInterface resultProcessing,String url){
         if(document.text().contains("出错啦，您访问的页面走丢啦！")){
-            CommonUtil.outputINFO("[INFO] "+url+"页面访问出错");
             Thread.interrupted();
         }
         this.url=url;
@@ -116,7 +114,6 @@ public class SecondX {
             BaseMessagesContext = baseMessages.HTMLshunt();
         } catch (Exception e) {
             e.printStackTrace();
-            CommonUtil.outputERROR("[ERROR] BaseMessage Exception :"+e.getMessage());
         }
 //        BaseMessages.BASE_INDEX;
         //"年检到期","保险到期","质保到期","排放标准","过户次数","维修保养","车主描述"
@@ -134,7 +131,6 @@ public class SecondX {
             carConfigContext = carConfig.HTMLshunt();
         } catch (Exception e) {
             e.printStackTrace();
-            CommonUtil.outputERROR("[ERROR] CarConfig Exception:"+e.getMessage());
         }
 //        CarConfig.CONFIG_INDEX
         //"发动机","变速器","车辆级别","颜色","燃油标号","驱动方式"

@@ -1,7 +1,18 @@
 package com.bangtaoche.messagepush.client.service;
 
 import com.bangtaoche.messagepush.client.analysis.WholeAnalysis;
+import com.bangtaoche.messagepush.client.dao.RenRenCheDAO;
+import com.bangtaoche.messagepush.client.entity.Che168Car;
+import com.bangtaoche.messagepush.client.entity.SendCarMessage;
+import com.bangtaoche.messagepush.client.message.MessageSends;
 import com.bangtaoche.messagepush.util.CommonUtil;
+import com.bangtaoche.messagepush.util.ThreadLocalClientFactory;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SpoderService {
     public static int INDEX_MAX=2;
@@ -56,36 +67,72 @@ public class SpoderService {
                  e.printStackTrace();
                  continue;
              }
-
-             if (s.contains("出错啦，您访问的页面走丢啦！")){
+             if (s.contains("出错啦，您访问的页面走丢啦！")&&"".equals(s)){
                 break;
             }
          }
 
         }
     }
-    public void startAnalysis1() {
-        int index;
-        for (index = 1; index <= (INDEX_MAX + 1); index++) {
-            if (index > INDEX_MAX) {
-                INDEX_MAX = 10;
-                ++DIZHI_INDEX;
-                index = 1;
 
-            }
-
-            String url = "https://www.che168.com/" + DIZHI_1[DIZHI_INDEX] + "/a0_0msdgscncgpi1ltocsp" + index + "exb112y96x0/";
-            CommonUtil.outputFileXXXX("[INFO] 正在运行" + DIZHI_1[DIZHI_INDEX] + "第" + index + "个页面,最多页面" + INDEX_MAX + "，地址为：" + url, "DIZHI_1");
-            WholeAnalysis wholeAnalysis = new WholeAnalysis(url, 20);
-//            wholeAnalysis.analyStart();
-
+    /**
+     * 下架
+     */
+    public void SoldOut(){
+        ExecutorService executorService = Executors.newFixedThreadPool(20);
+        RenRenCheDAO dao = new RenRenCheDAO();
+        MessageSends sends = new MessageSends();
+        ThreadLocalClientFactory instance = ThreadLocalClientFactory.getInstance();
+        List<Che168Car> all = null;
+        try {
+            all = dao.getAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Che168Car c:
+                all) {
+            executorService.execute(new SolidRunnable(instance.getWebClient(),c,sends,dao));
         }
     }
+
 
     //------测试----------------
     public static void main (String []args){
         SpoderService spoderService = new SpoderService();
         spoderService.startService();
+
+//        spoderService.SoldOut();
     }
 
+    class SolidRunnable implements Runnable{
+        WebClient webClient;
+        Che168Car c;
+        MessageSends sends;
+        RenRenCheDAO dao;
+        SolidRunnable(WebClient webClient,Che168Car c,MessageSends messageSends,RenRenCheDAO dao){
+            this.webClient=webClient;
+            this.c=c;
+            this.sends=messageSends;
+            this.dao=dao;
+        }
+
+        public void run() {
+            HtmlPage htmlPage = CommonUtil.GeneratePage(webClient, c.getSourceUrl());
+            if (htmlPage.isHtmlPage()){
+                if (htmlPage.asText().contains("出错啦，您访问的页面走丢啦！")){
+                    c.setStatus(2);
+                    SendCarMessage sendCarMessage=new SendCarMessage();
+                    sendCarMessage.setCarId(c.getCarId());
+                    sendCarMessage.setSourceId(5);
+                    sends.sendMessageCarDownSale(sendCarMessage);
+                    try {
+                        dao.updateChe168CarXiaJia(c);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    CommonUtil.outputFileXXXX("下架ID："+c.getCarId(),"下架");
+                }
+            }
+        }
+    }
 }

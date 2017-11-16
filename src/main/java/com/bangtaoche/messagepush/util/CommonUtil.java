@@ -1,9 +1,9 @@
 package com.bangtaoche.messagepush.util;
 
-import com.bangtaoche.messagepush.client.analysis.pojo.bean.carBean;
 import com.bangtaoche.messagepush.client.analysis.pojo.bean.carDetailsBean;
 import com.bangtaoche.messagepush.client.dao.RenRenCheDAO;
 import com.bangtaoche.messagepush.client.entity.IP;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -26,6 +26,7 @@ public class CommonUtil {
     private static String WINDOWS_PATH="E:/testfile/2/";
     private static String LINUX_PATH="/home/leco/Git/Log/";
     private static Random random = new Random();
+    private static IP ipw_copy = new IP();
     /**
      * 使用正则表达式校验字符串
      *
@@ -59,35 +60,35 @@ public class CommonUtil {
         IP ipw = new IP();
         try {
             List<IP> ipd = renRenCheDAO.getIP();
-            int rund_index=random.nextInt(ipd.size());
-            ipw = ipd.get(rund_index);
-            CommonUtil.outputFileXXXX(ipw.toString(),"ipsssssss");
+            ipw = ipd.get(Math.round(ip.size()-1));
+            ipw_copy=ipw;
+            System.out.printf("ssssssssssssss"+ipw.toString());
+        }catch (NullPointerException e){
+            ipw=ipw_copy;
         } catch (Exception e) {
             e.printStackTrace();
-            GeneratePage(webClients, url);
         }
         String ip = ipw.getIP();
         int prot = ipw.getPort();
         proxyConfig.setProxyHost(ip);
         proxyConfig.setProxyPort(prot);
         try {
-            HtmlPage page = webClients.getPage(url);
+            Page page = webClients.getPage(url);
             if (page.isHtmlPage()){
-                htmlpage=  page;
-                CommonUtil.outputINFO("[INFO] GeneratePage:"+htmlpage.getBaseURI());
+                htmlpage= (HtmlPage) page;
             }else {
-               CommonUtil.outputERROR("[ERROR] 不是一个HTML页面"+url);
+                System.out.println("---------------------------");
+                System.out.println("***************************");
+                System.out.println("不是HTML页面");
             }
-            if (htmlpage!=null){
-                CommonUtil.outputINFO("页面解析成功");
-                return htmlpage;
-            }
-        }catch (Exception e){
+        } catch (IOException e) {
             e.printStackTrace();
-            CommonUtil.outputERROR("[ERROR] GeneratePage: Exception"+e.getMessage() );
+        }catch (Exception e){
             GeneratePage(webClients,url);
         }
-
+        if (htmlpage!=null){
+            return htmlpage;
+        }
         return GeneratePage(webClients,url);
     }
 
@@ -95,25 +96,6 @@ public class CommonUtil {
 
         return webClient;
     }
-//    /**
-//     * 解析一级页面的车辆<ul>标签
-//     * @param document Html文档树
-//     * @return  //解析后的节点树
-//     */
-//    public static Elements analysisOneLevelUl(Document document){
-//        Elements lis = document.getElementsByClass("list-base").get(0).getElementsByTag("li");
-//        return lis;
-//    }
-
-//    /**
-//     * 获取单个节点中a标签的href属性
-//     * @param element 节点
-//     * @return        url地址
-//     */
-//    public static String analysisOneLevelLi(Element element){
-//        String attr = element.getElementsByTag("a").get(0).attr("href");
-//        return attr;
-//    }
 
     /**
      * 打印错误
@@ -132,136 +114,8 @@ public class CommonUtil {
             bw = new BufferedWriter(new OutputStreamWriter(out));
             pw = new PrintWriter(bw);
             pw.println(car.toString());
-            pw.println("**********************************************************");
-            pw.println("**********************************************************");
-            pw.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                out.close();
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            pw.close();
-
-        }
-    }
-    //输出列表页
-    public  static void outputFileList(carBean car){
-        FileOutputStream out = null;
-        BufferedWriter bw = null;
-        PrintWriter pw = null;
-        try {
-            out = new FileOutputStream(LINUX_PATH+"b",true);
-            bw = new BufferedWriter(new OutputStreamWriter(out));
-            pw = new PrintWriter(bw);
-            pw.println(car.toString());
-            pw.println("**********************************************************");
-            pw.println("**********************************************************");
-            pw.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                out.close();
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            pw.close();
-
-        }
-    }
-    //输出ip
-    public  static void outputFileIP(String car){
-        FileOutputStream out = null;
-        BufferedWriter bw = null;
-        PrintWriter pw = null;
-        try {
-            out = new FileOutputStream(LINUX_PATH+"ip",true);
-            bw = new BufferedWriter(new OutputStreamWriter(out));
-            pw = new PrintWriter(bw);
-            pw.println(car.toString());
-            pw.println("**********************************************************");
-            pw.println("**********************************************************");
-            pw.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                out.close();
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            pw.close();
-
-        }
-    }
-    //错误日志的打印
-    public  static void outputERROR(String car){
-        FileOutputStream out = null;
-        BufferedWriter bw = null;
-        PrintWriter pw = null;
-        try {
-            out = new FileOutputStream(LINUX_PATH+"error",true);
-            bw = new BufferedWriter(new OutputStreamWriter(out));
-            pw = new PrintWriter(bw);
-            pw.println(car.toString());
-            pw.println("**********************************************************");
-            pw.println("**********************************************************");
-            pw.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                out.close();
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            pw.close();
-
-        }
-    }
-    public  static void outputINFO(String car){
-        FileOutputStream out = null;
-        BufferedWriter bw = null;
-        PrintWriter pw = null;
-        try {
-            out = new FileOutputStream(LINUX_PATH+"info",true);
-            bw = new BufferedWriter(new OutputStreamWriter(out));
-            pw = new PrintWriter(bw);
-            pw.println(car.toString());
-            pw.println("**********************************************************");
-            pw.println("**********************************************************");
-            pw.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                out.close();
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            pw.close();
-
-        }
-    }
-    public  static void outputRun(String car){
-        FileOutputStream out = null;
-        BufferedWriter bw = null;
-        PrintWriter pw = null;
-        try {
-            out = new FileOutputStream(LINUX_PATH+"run",true);
-            bw = new BufferedWriter(new OutputStreamWriter(out));
-            pw = new PrintWriter(bw);
-            pw.println(car.toString());
-            pw.println("**********************************************************");
-            pw.println("**********************************************************");
+//            pw.println("**********************************************************");
+//            pw.println("**********************************************************");
             pw.flush();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -302,6 +156,7 @@ public class CommonUtil {
 
         }
     }
+
     //输出详情页
     public  static void outputFileINFO(String s){
         FileOutputStream out = null;

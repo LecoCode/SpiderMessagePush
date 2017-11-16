@@ -35,10 +35,11 @@ public  class ThreadLocalClientFactory{
   		webClient.getOptions().setTimeout(5000);
   		webClient.getOptions().setDoNotTrackEnabled(false);
   		webClient.getOptions().setUseInsecureSSL(true);
-//  		webClient.setJavaScriptTimeout(3000);
+//  		webClient.setJavaScriptTimeout(6000);
+  		webClient.getOptions().setUseInsecureSSL(true);
 
           //启动重定向
-//        webClient.getOptions().setRedirectEnabled(true); 
+//        webClient.getOptions().setRedirectEnabled(true);
           
            //设置webClient的相关参数  
 //          webClient.getCookieManager().setCookiesEnabled(true);// 开启cookie管理

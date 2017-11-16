@@ -11,17 +11,12 @@ import java.util.Date;
 
 public class CheResultProcessing implements CheResultInterface {
 
-
     /**
      * 列表页结果集处理
      * @param car
      */
     public void Receive(carBean car) {
-        CommonUtil.outputRun("[run] 列表页解析结束");
         if (car==null)return;
-        System.out.println(car);
-
-        CommonUtil.outputFileList(car);
         /*
         与数据库交互
          */
@@ -48,19 +43,17 @@ public class CheResultProcessing implements CheResultInterface {
         che168.setCarPrice(Double.parseDouble(s.substring(0, s.indexOf(".") + 2)));
         //写入数据库
         RenRenCheDAO renRenCheDAO = new RenRenCheDAO();
-
-        long id = -1;
-        try {
-            if (renRenCheDAO.getChe168Che(che168.getCarUrl())==null){
-                id = renRenCheDAO.insertRenRenChe(che168);
-            if (id!=-1){
-                CommonUtil.outputINFO("[INFO] 插入；列表数据成功"+car.getUrl());
-            }else {
-                CommonUtil.outputERROR("[ERROR] 插入；"+id+"列表数据失败"+car.getUrl());
-             }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//
+//        long id = -1;
+//        try {
+//            if (renRenCheDAO.getChe168Che(che168.getCarUrl())==null){
+//                id = renRenCheDAO.insertRenRenChe(che168);
+//            if (id!=-1){
+        CommonUtil.outputFileXXXX(che168.toString(),"SQL_LB");
+//            }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 }

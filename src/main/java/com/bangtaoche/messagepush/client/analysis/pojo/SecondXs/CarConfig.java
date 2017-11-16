@@ -1,6 +1,5 @@
 package com.bangtaoche.messagepush.client.analysis.pojo.SecondXs;
 
-import com.bangtaoche.messagepush.util.CommonUtil;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
@@ -55,20 +54,21 @@ public class CarConfig {
         //高端配置
 
         Elements scrollPics = element.getElementsByClass("scrollPic");
-        if (scrollPics.size()>2) {
+        if (scrollPics.size()>=1){
             Element scrollPic = scrollPics.get(0);
-            if (scrollPic != null) {
+            if (scrollPic!=null){
                 Element ul1 = scrollPic.getElementsByTag("ul").get(0);
                 Elements li = ul1.getElementsByTag("li");
-                for (Element e :
+                for (Element e:
                         li) {
                     Element p = e.getElementsByTag("p").get(0);
-                    GaoDuanPeiZhi += p.text();
+                    GaoDuanPeiZhi+=p.text()+",";
                 }
             }
         }
+
+
 //        System.out.println("------------>"+quDongBiaoHao);
-        CommonUtil.outputRun("[run] CarConfig 结束");
         HashMap<String, String> textAll = getTextAll(faDongji, bianSuQi, cheLiangJiBie, yanSe, ranYouBiaoHao, quDongBiaoHao,GaoDuanPeiZhi);
         return textAll;
     }

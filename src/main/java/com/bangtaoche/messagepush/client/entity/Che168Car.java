@@ -470,7 +470,7 @@ public class Che168Car {
 
 	@Override
 	public String toString() {
-		return "GuaZiCar [carId=" + carId + ", carName=" + carName + ", addTime=" + addTime + ", ownerPrice="
+		return "[carId=" + carId + ", carName=" + carName + ", addTime=" + addTime + ", ownerPrice="
 				+ ownerPrice + ", gearbox=" + gearbox + ", directPrice=" + directPrice + ", regTime=" + regTime
 				+ ", mileage=" + mileage + ", regCity=" + regCity + ", standard=" + standard + ", dealCount="
 				+ dealCount + ", displacement=" + displacement + ", seeCarCity=" + seeCarCity

@@ -48,7 +48,6 @@ public class WholeAnalysisRunnable implements Runnable {
 
     public WholeAnalysisRunnable(String u, HtmlPage page){
         if (page==null){
-            CommonUtil.outputERROR("NULLLLLLLLLLLLLLLLLLLLLLLLLL");
         }
         this.url=u;
         this.page=page;
@@ -73,11 +72,9 @@ public class WholeAnalysisRunnable implements Runnable {
         try {
             documentPage = Jsoup.parse(htmlPage.asXml());
         }catch (NullPointerException e){
-            CommonUtil.outputERROR("[ERROR] 详细页获取到脏的IP了:"+date.getTime());
             analysisPage(webClient);
         }
         if(documentPage.text().contains("出错啦，您访问的页面走丢啦！")){
-            CommonUtil.outputINFO("[INFO] "+url+"页面访问出错");
             Thread.interrupted();
         }
          SecondX secondX = new SecondX(documentPage,new ResultProcessing(),url);

@@ -64,7 +64,16 @@ public class RenRenCheDAO extends BaseDAO{
 		map.add("price_reduction", car.getPriceReduction());
 		daoHelper.updateByID(Che168Car.class, map, car.getCarId());
 	}
-	
+	/**
+	 * 修改下架
+	 * @param car
+	 * @throws Exception
+	 */
+	public synchronized void updateChe168CarXiaJia(Che168Car car) throws Exception {
+		KeyValueParis map = new KeyValueParis();
+		map.add("status",car.getStatus());
+		daoHelper.updateByID(Che168Car.class, map, car.getCarId());
+	}
 	/**
 	 * 批量修改车辆
 	 * @param carUrls
@@ -86,6 +95,17 @@ public class RenRenCheDAO extends BaseDAO{
 	public List<Che168Car> getCars(List<Long> carIds) throws Exception {
 		DBQuery dbquery = new DBQuery();
 		dbquery.column("car_id").inList(carIds);
+		dbquery.and().column("status").equal(1);
+		return daoHelper.getsByQuery(Che168Car.class, dbquery, null, null);
+	}
+
+	/**
+	 * 获取所有表中的所有数据
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Che168Car> getAll() throws Exception {
+		DBQuery dbquery = new DBQuery();
 		dbquery.and().column("status").equal(1);
 		return daoHelper.getsByQuery(Che168Car.class, dbquery, null, null);
 	}
